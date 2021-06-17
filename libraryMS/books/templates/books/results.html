@@ -1,0 +1,36 @@
+<h1>{{ book.title }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<p>Book ID : {{book.id}}</p>
+<p>Category : {{book.get_category_display}}</p>
+<p>Publish year : {{book.publish_year}}</p>
+<p>Author : {{book.author}}</p>
+<p>Synopsis : {{book.description}}</p>
+<p>Status : {{book.status}}</p>
+
+{% if book.status == "Available" %}
+<h2>Book is Available</h2>
+
+<form action="{% url 'borrow' book.id %}" method="post">
+{% csrf_token %}
+<p>Borrower: </p><p>haha{{book.get_queryset}}</p>
+<select class="selectUser" name="dropdown">
+    {% for u in book.get_queryset %}
+        <option value="{{u.id}}">{{u.user_name}}</option>
+    {% endfor %}
+</select>
+
+<input type="submit" value="Borrow">
+</form>
+
+
+{% else %}
+<h2>Book Borrowing Details</h2>
+<p>Borrow by : {{book.borrower.user_name}}</p>
+<p>Due date : {{book.due_back}}</p>
+<form action="{% url 'returnB' book.id %}" method="post">
+{% csrf_token %}
+<input type="submit" value="Return">
+</form>
+{% endif %}

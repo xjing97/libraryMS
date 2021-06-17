@@ -1,0 +1,36 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'books/style.css' %}">
+
+<div>
+  <form action="." method="get">
+  {% csrf_token %}
+  <p>Search Book Name: <input type="text" name="search_box"> </p>
+  <input type="checkbox" name="available" value="available"> Show books that are available to borrow
+  <br><br>
+  <input type="submit" value="Search">
+  </form>
+</div>
+<br>
+{% if book_list %}
+  <table>
+    <tr>
+      <th>Book ID</th>
+      <th>Book Name</th>
+      <th>Year</th>
+      <th>Category</th>
+      <th>Status</th>
+    </tr>
+    {% for book in book_list %}
+      <tr>
+        <td>{{book.id}}</td>
+        <td><a href="{% url 'detail' book.id %}">{{ book.title }}</a></td>
+        <td>{{book.publish_year}}</td>
+        <td>{{book.category}} ({{book.get_category_display}})</td>
+        <td>{{book.status}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+    <p>No books are available.</p>
+{% endif %}

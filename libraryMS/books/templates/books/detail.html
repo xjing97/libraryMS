@@ -1,0 +1,90 @@
+{% load static %}
+<head>
+  <style>
+    th {
+      width:20%
+    }
+  </style>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'books/style.css' %}">
+
+<input type=button value="Previous Page" onClick="location.href={% url 'index' %}">
+
+<h1>{{ book.title }}</h1>
+
+<div><center>
+  <table style="width: 70%;">
+    <tr>
+      <th>Book ID :</th>
+      <td>{{book.id}}</td>
+    </tr>
+    <tr>
+      <th>Category :</th>
+      <td>{{book.get_category_display}}</td>
+    </tr>
+    <tr>
+      <th>Publish year :</th>
+      <td>{{book.publish_year}}</td>
+    </tr>
+    <tr>
+      <th>Author :</th>
+      <td>{{book.author}}</td>
+    </tr>
+    <tr>
+      <th>Synopsis :</th>
+      <td>{{book.description}}</td>
+    </tr>
+    <tr>
+      <th>Status :</th>
+      <td>{{book.status}}</td>
+    </tr>
+  </table>
+
+
+</div>
+<br>
+<div>
+{% if book.status == "Available" %}
+<h2>Book is Available</h2>
+
+<form action="{% url 'borrow' book.id %}" method="post">
+{% csrf_token %}
+<p>Borrower:
+  <select class="selectUser" name="dropdown" selected="selected">
+      <option value="0">-</option>
+      {% for u in view.users %}
+          <option value="{{u.id}}">{{u.user_name}}</option>
+      {% endfor %}
+      {% if users %}
+          {% for u in users %}
+              <option value="{{u.id}}">{{u.user_name}}</option>
+          {% endfor %}
+      {% endif %}
+  </select>
+</p>
+
+{% if error_message %}<p style="color:red"><strong>{{ error_message }}</strong></p>{% endif %}
+
+
+<input type="submit" value="Borrow">
+</form>
+
+
+{% else %}
+<h2>Book Borrowing Details</h2>
+<p>Borrow by : {{book.borrower.id}} ({{book.borrower.user_name}})</p>
+<p>Due date : {{book.due_back|date:"d M Y"}} </p>
+<p style="color:red"><strong>{% if book.is_overdue %}Overdue: {{book.is_overdue}} day(s){% endif %}</strong></p>
+
+<form action="{% url 'returnB' book.id %}" method="post">
+{% csrf_token %}
+<input type="submit" value="Return">
+</form>
+{% if book.is_overdue == 0 %}
+<form action="{% url 'renew' book.id %}" method="post">
+{% csrf_token %}
+<input type="submit" value="Renew">
+</form>
+{% endif %}
+{% endif %}
+</div>
